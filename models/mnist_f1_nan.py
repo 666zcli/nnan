@@ -8,7 +8,7 @@ snn = nnan.NNaNUnit(dims = [10,10,10])
 class mnist_model_nan(nn.Module):
 
     def __init__(self):
-        super(mnist_model, self).__init__()
+        super(mnist_model_nan, self).__init__()
         self.layers = nn.Sequential(
             nn.Linear(28 * 28, 512),
             nn.BatchNorm1d(512),
