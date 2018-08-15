@@ -122,7 +122,13 @@ def main():
         os.makedirs(save_path)
     else:
       raise OSError('Directory {%s} exists. Use a new one.' % save_path)
-
+    
+    img_dir = '/home/zl198/nnan/img_func/'
+    save_img = os.path.join(img_dir, args.save)
+    if not os.path.exists(save_img):
+        os.makedirs(save_img)
+    else:
+       raise OSError('Directory {%s} exists. Use a new one.' % save_img)
     setup_logging(os.path.join(save_path, 'log.txt'))
     results_file = os.path.join(save_path, 'results.%s')
     results = ResultsLog(results_file % 'csv', results_file % 'html')
@@ -236,12 +242,43 @@ def main():
 
     for epoch in range(args.start_epoch, args.epochs):
         optimizer = adjust_optimizer(optimizer, epoch, regime)
-
+        
+        if epoch = 0：
+            #plot the function of nnan
+            xs = np.linspace(-10, 10, 1000)
+            input_var = torch.from_numpy(xs)
+            input_var = Variable(input_var.type(torch.cuda.FloatTensor), volatile=True)
+            snnput = snn(input_var)
+            ys = snnput.data.cpu().numpy()
+            plt.plot(xs, ys, 'r--', label='learned')
+	          plt.legend()
+	          plt.title('Function:%d'%epoch)
+	          plt.savefig('/home/zl198/nnan/%s/%d.jpg'%save_img%epoch)
+	          plt.clf()
+	          plt.cla()
+	          plt.close()
+                      
         # train for one epoch
         train_result = train(train_loader, model, criterion, epoch, optimizer)
 
         train_loss, train_prec1, train_prec5 = [
             train_result[r] for r in ['loss', 'prec1', 'prec5']]
+        
+        #plot the function of nnan
+        if epoch%20 = 0:
+            xs = np.linspace(-20, 20, 1000)
+            input_var = torch.from_numpy(xs)
+            input_var = Variable(input_var.type(torch.cuda.FloatTensor), volatile=True)
+            snnput = snn(input_var)
+            ys = snnput.data.cpu().numpy()
+            plt.plot(xs, ys, 'r--', label='learned')
+	          plt.legend()
+	          plt.title('Function:%d'%epoch)
+	          plt.savefig('/home/zl198/nnan/%s/%d.jpg'%save_img%epoch)
+	          plt.clf()
+	          plt.cla()
+	          plt.close()
+        
 
         # evaluate on validation set
         val_result = validate(val_loader, model, criterion, epoch)
