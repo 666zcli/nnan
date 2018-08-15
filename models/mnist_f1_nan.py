@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import nnan
-__all__ = ['mnist_f1']
+__all__ = ['mnist_f1_nan']
 
 snn = nnan.NNaNUnit(dims = [10,10,10])
 
