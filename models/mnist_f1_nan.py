@@ -1,7 +1,9 @@
 import torch
 import torch.nn as nn
+import nnan
 __all__ = ['mnist_f1']
 
+snn = nnan.NNaNUnit(dims = [10,10,10])
 
 class mnist_model(nn.Module):
 
@@ -10,19 +12,24 @@ class mnist_model(nn.Module):
         self.layers = nn.Sequential(
             nn.Linear(28 * 28, 512),
             nn.BatchNorm1d(512),
-            nn.ReLU(True),
+            #nn.ReLU(True),
+	    snn,
             nn.Linear(512, 512),
             nn.BatchNorm1d(512),
-            nn.ReLU(True),
+            #nn.ReLU(True),
+	    snn,
             nn.Linear(512, 512),
             nn.BatchNorm1d(512),
-            nn.ReLU(True),
+            #nn.ReLU(True),
+	    snn,
             nn.Linear(512, 512),
             nn.BatchNorm1d(512),
-            nn.ReLU(True),
+            #nn.ReLU(True),
+	    snn,
             nn.Linear(512, 512),
             nn.BatchNorm1d(512),
-            nn.ReLU(True),
+            #nn.ReLU(True),
+  	    snn,
             nn.Linear(512, 10),
         )
         self.regime = {
