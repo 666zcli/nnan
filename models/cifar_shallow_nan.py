@@ -31,7 +31,7 @@ class AlexNet(nn.Module):
             nn.Linear(384, 192, bias=False),
             nn.BatchNorm1d(192),
             #nn.ReLU(inplace=True),
-            snn
+            snn,
             nn.Dropout(0.5),
             nn.Linear(192, num_classes)
         )
