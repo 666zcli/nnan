@@ -21,6 +21,9 @@ from ast import literal_eval
 from torch.nn.utils import clip_grad_norm
 from math import ceil
 import numpy as np
+import matplotlib.pyplot as plt
+import sys
+from models.mnist_f1_nan import snn
 
 model_names = sorted(name for name in models.__dict__
                      if name.islower() and not name.startswith("__")
