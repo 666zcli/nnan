@@ -5,7 +5,7 @@ __all__ = ['mnist_f1_nan']
 
 snn = nnan.NNaNUnit(dims = [10,10,10])
 
-class mnist_model(nn.Module):
+class mnist_model_nan(nn.Module):
 
     def __init__(self):
         super(mnist_model, self).__init__()
@@ -45,4 +45,4 @@ class mnist_model(nn.Module):
 
 
 def mnist_f1(**kwargs):
-    return mnist_model()
+    return mnist_model_nan()
