@@ -129,6 +129,7 @@ def main():
     
     img_dir = '/home/zl198/nnan/img_func/'
     save_img = os.path.join(img_dir, args.save)
+    print(save_img)
     if not os.path.exists(save_img):
         os.makedirs(save_img)
     else:
