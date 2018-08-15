@@ -266,19 +266,19 @@ def main():
             train_result[r] for r in ['loss', 'prec1', 'prec5']]
         
         #plot the function of nnan
-        if epoch%20 = 0:
+        if epoch%20 == 0:
             xs = np.linspace(-20, 20, 1000)
             input_var = torch.from_numpy(xs)
             input_var = Variable(input_var.type(torch.cuda.FloatTensor), volatile=True)
             snnput = snn(input_var)
             ys = snnput.data.cpu().numpy()
             plt.plot(xs, ys, 'r--', label='learned')
-	          plt.legend()
-	          plt.title('Function:%d'%epoch)
-	          plt.savefig('/home/zl198/nnan/%s/%d.jpg'%save_img%epoch)
-	          plt.clf()
-	          plt.cla()
-	          plt.close()
+	    plt.legend()
+	    plt.title('Function:%d'%epoch)
+	    plt.savefig('/home/zl198/nnan/%s/%d.jpg'%save_img%epoch)
+	    plt.clf()
+	    plt.cla()
+	    plt.close()
         
 
         # evaluate on validation set
