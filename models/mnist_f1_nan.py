@@ -44,5 +44,5 @@ class mnist_model_nan(nn.Module):
         return self.layers(inputs.view(inputs.size(0), -1))
 
 
-def mnist_f1(**kwargs):
+def mnist_f1_nan(**kwargs):
     return mnist_model_nan()
