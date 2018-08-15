@@ -244,7 +244,7 @@ def main():
     for epoch in range(args.start_epoch, args.epochs):
         optimizer = adjust_optimizer(optimizer, epoch, regime)
         
-	if epoch == 0：
+        if epoch == 0：
             #plot the function of nnan
             xs = np.linspace(-10, 10, 1000)
             input_var = torch.from_numpy(xs)
@@ -273,12 +273,13 @@ def main():
             snnput = snn(input_var)
             ys = snnput.data.cpu().numpy()
             plt.plot(xs, ys, 'r--', label='learned')
-	    plt.legend()
-	    plt.title('Function:%d'%epoch)
-	    plt.savefig('/home/zl198/nnan/%s/%d.jpg'%save_img%epoch)
-	    plt.clf()
-	    plt.cla()
-	    plt.close()
+            plt.legend()
+            plt.title('Function:%d'%epoch)
+            plt.savefig('/home/zl198/nnan/%s/%d.jpg'%save_img%epoch)
+            plt.clf()
+            plt.cla()
+            plt.close()
+	    
         
 
         # evaluate on validation set
