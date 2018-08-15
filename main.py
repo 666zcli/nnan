@@ -252,12 +252,12 @@ def main():
             snnput = snn(input_var)
             ys = snnput.data.cpu().numpy()
             plt.plot(xs, ys, 'r--', label='learned')
-	          plt.legend()
-	          plt.title('Function:%d'%epoch)
-	          plt.savefig('/home/zl198/nnan/%s/%d.jpg'%save_img%epoch)
-	          plt.clf()
-	          plt.cla()
-	          plt.close()
+	    plt.legend()
+	    plt.title('Function:%d'%epoch)
+	    plt.savefig('/home/zl198/nnan/%s/%d.jpg'%save_img%epoch)
+	    plt.clf()
+	    plt.cla()
+	    plt.close()
                       
         # train for one epoch
         train_result = train(train_loader, model, criterion, epoch, optimizer)
