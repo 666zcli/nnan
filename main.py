@@ -244,7 +244,7 @@ def main():
     for epoch in range(args.start_epoch, args.epochs):
         optimizer = adjust_optimizer(optimizer, epoch, regime)
         
-        if epoch=0：
+        if epoch == 0：
             #plot the function of nnan
             xs = np.linspace(-10, 10, 1000)
             input_var = torch.from_numpy(xs)
