@@ -258,7 +258,7 @@ def main():
             plt.plot(xs, ys, 'r--', label='learned')
             plt.legend()
             plt.title('Function:%d'%epoch)
-            plt.savefig('%s/%d.jpg'%(str(save_img)，epoch))
+            plt.savefig('%s/%d.jpg'%(str(save_img),epoch))
             plt.clf()
             plt.cla()
             plt.close()
