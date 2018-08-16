@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import nnan
-__all__ = ['cifar10_shallow', 'cifar100_shallow']
+__all__ = ['cifar10_shallow_nan', 'cifar100_shallow_nan']
 
 snn = nnan.NNaNUnit(dims = [10, 10, 10])
 
@@ -50,11 +50,11 @@ class AlexNet(nn.Module):
         return x
 
 
-def cifar10_shallow(**kwargs):
+def cifar10_shallow_nan(**kwargs):
     num_classes = getattr(kwargs, 'num_classes', 10)
     return AlexNet(num_classes)
 
 
-def cifar100_shallow(**kwargs):
+def cifar100_shallow_nan(**kwargs):
     num_classes = getattr(kwargs, 'num_classes', 100)
     return AlexNet(num_classes)
