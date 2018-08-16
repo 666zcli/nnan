@@ -23,7 +23,7 @@ from math import ceil
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
-from models.cifar10_shallow_nan import snn
+from models.cifar_shallow_nan import snn
 
 model_names = sorted(name for name in models.__dict__
                      if name.islower() and not name.startswith("__")
