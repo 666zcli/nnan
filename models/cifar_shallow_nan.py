@@ -3,7 +3,7 @@ import torch.nn as nn
 import nnan
 __all__ = ['cifar10_shallow_nan', 'cifar100_shallow_nan']
 
-snn = nnan.NNaNUnit(dims = [10, 10, 10])
+snn = nnan.NNaNUnit(dims = [5, 5, 5])
 
 class AlexNet(nn.Module):
 
