@@ -3,7 +3,7 @@ import torchvision.transforms as transforms
 import math
 import nnan
 
-__all__ = ['resnet', 'resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152']
+__all__ = ['resnet_nan', 'resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152']
 
 
 def conv3x3(in_planes, out_planes, stride=1):
@@ -209,7 +209,7 @@ class ResNet_cifar10(ResNet):
         }
 
 
-def resnet(**kwargs):
+def resnet_nan(**kwargs):
     num_classes, depth, dataset = map(
         kwargs.get, ['num_classes', 'depth', 'dataset'])
     if dataset == 'imagenet':
