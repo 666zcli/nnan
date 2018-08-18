@@ -8,3 +8,4 @@ from .cifar_shallow import *
 from .mnist_f1_nan import *
 from .cifar_shallow_nan import *
 from .alexnet_nan import *
+from .resnet_nan import *
