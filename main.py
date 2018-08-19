@@ -127,7 +127,8 @@ def main():
     else:
       raise OSError('Directory {%s} exists. Use a new one.' % save_path)
     
-    img_dir = '/home/zl198/nnan/img_func/'
+    #img_dir = '/home/zl198/nnan/img_func/'
+    img_dir = './img_func/'
     save_img = os.path.join(img_dir, args.save)
     print(save_img)
     if not os.path.exists(save_img):
