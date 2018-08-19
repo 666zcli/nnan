@@ -3,7 +3,7 @@ import torchvision.transforms as transforms
 import math
 import nnan
 
-__all__ = ['resnet_nan', 'resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152']
+__all__ = ['resnet_nan', 'resnet18_nan', 'resnet34', 'resnet50', 'resnet101', 'resnet152']
 
 snn = nnan.NNaNUnit(dims=[10,10,10])
 
@@ -249,7 +249,7 @@ def resnet_nan(**kwargs):
         return ResNet_cifar10(num_classes=num_classes,
                               block=BasicBlock, depth=depth)
 
-def resnet18(**kwargs):
+def resnet18_nan(**kwargs):
     num_classes, dataset = map(
         kwargs.get, ['num_classes', 'dataset'])
     depth = 18
