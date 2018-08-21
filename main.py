@@ -371,7 +371,13 @@ def forward(data_loader, model, criterion, epoch=0, training=True, optimizer=Non
 
         # compute output
         if not training:
-            output = model(input_var)
+	    if torch.cuda.device_count() > 1:
+                    # model = nn.DataParallel(model)
+                    # outputs = model(inputs)
+                output = nn.parallel.data_parallel(model, input_var)
+            else:
+                output = model(input_var)
+            #output = model(input_var)
             loss = criterion(output, target_var)
 
             # measure accuracy and record loss
