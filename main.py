@@ -23,7 +23,7 @@ from math import ceil
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
-from models.resnet_nan import snn
+#from models.resnet_nan import snn
 
 model_names = sorted(name for name in models.__dict__
                      if name.islower() and not name.startswith("__")
@@ -128,6 +128,7 @@ def main():
       raise OSError('Directory {%s} exists. Use a new one.' % save_path)
     
     #img_dir = '/home/zl198/nnan/img_func/'
+    '''
     img_dir = './img_func/'
     save_img = os.path.join(img_dir, args.save)
     print(save_img)
@@ -135,6 +136,7 @@ def main():
         os.makedirs(save_img)
     else:
        raise OSError('Directory {%s} exists. Use a new one.' % save_img)
+    '''
     setup_logging(os.path.join(save_path, 'log.txt'))
     results_file = os.path.join(save_path, 'results.%s')
     results = ResultsLog(results_file % 'csv', results_file % 'html')
@@ -248,7 +250,7 @@ def main():
 
     for epoch in range(args.start_epoch, args.epochs):
         optimizer = adjust_optimizer(optimizer, epoch, regime)
-        
+        '''
         if epoch == 0:
             #plot the function of nnan
             xs = np.linspace(-10, 10, 1000)
@@ -263,6 +265,7 @@ def main():
             plt.clf()
             plt.cla()
             plt.close()
+	 '''
                       
         # train for one epoch
         train_result = train(train_loader, model, criterion, epoch, optimizer)
@@ -271,6 +274,7 @@ def main():
             train_result[r] for r in ['loss', 'prec1', 'prec5']]
         
         #plot the function of nnan
+	'''
         if epoch%20 == 0:
             xs = np.linspace(-10, 10, 1000)
             input_var = torch.from_numpy(xs)
@@ -284,6 +288,7 @@ def main():
             plt.clf()
             plt.cla()
             plt.close()
+	 '''
 	    
         
 
