@@ -377,7 +377,7 @@ def forward(data_loader, model, criterion, epoch=0, training=True, optimizer=Non
                     # model = nn.DataParallel(model)
                     # outputs = model(inputs)
                     output = nn.parallel.data_parallel(model, input_var)
-                else:
+            else:
                     output = model(input_var)
             loss = criterion(output, target_var)
             # measure accuracy and record loss
