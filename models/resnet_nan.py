@@ -146,7 +146,7 @@ class ResNet_imagenet(ResNet):
                                bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.ReLU(inplace=True)
-        #self.snn = nnan.NNaNUnit(dims = [10,10,10])
+        self.snn = nnan.NNaNUnit(dims = [10,10,10])
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, 64, layers[0])
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
@@ -156,8 +156,7 @@ class ResNet_imagenet(ResNet):
         self.feats = nn.Sequential(self.conv1,
                                    self.bn1,
                                    #self.relu,
-                                   #self.snn,
-                                   snn,
+                                   self.snn,                                 
                                    self.maxpool,
 
                                    self.layer1,
