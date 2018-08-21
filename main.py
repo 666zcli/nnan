@@ -159,6 +159,7 @@ def main():
         model_config = dict(model_config, **literal_eval(args.model_config))
 
     model = model(**model_config)
+    model = torch.nn.DataParallel(model, device_ids=[0, 1])
     logging.info("created model with configuration: %s", model_config)
 
     # optionally resume from a checkpoint
