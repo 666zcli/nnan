@@ -513,4 +513,7 @@ def validate(data_loader, model, criterion, epoch):
 
 
 if __name__ == '__main__':
+    starttime = datetime.now()
     main()
+    endtime = datetime.now()
+    print (endtime - starttime).seconds
