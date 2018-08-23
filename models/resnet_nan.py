@@ -3,7 +3,7 @@ import torchvision.transforms as transforms
 import math
 import nnan
 
-__all__ = ['resnet_nan', 'resnet18_nan', 'resnet34', 'resnet50', 'resnet101', 'resnet152']
+__all__ = ['resnet_nan', 'resnet18_nan', 'resnet34_nan', 'resnet50', 'resnet101', 'resnet152']
 
 #snn = nnan.NNaNUnit(dims=[10,10,10])
 
@@ -32,7 +32,7 @@ class BasicBlock(nn.Module):
         self.conv1 = conv3x3(inplanes, planes, stride)
         self.bn1 = nn.BatchNorm2d(planes)
         self.relu = nn.ReLU(inplace=True)
-        self.snn = nnan.NNaNUnit(dims=[10,10,10])
+        self.snn = nnan.NNaNUnit(dims=[10,10])
         self.conv2 = conv3x3(planes, planes)
         self.bn2 = nn.BatchNorm2d(planes)
         self.downsample = downsample
@@ -73,7 +73,7 @@ class Bottleneck(nn.Module):
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(planes * 4)
         #self.relu = nn.ReLU(inplace=True)
-        self.snn = nnan.NNaNUnit(dims=[10,10,10])
+        self.snn = nnan.NNaNUnit(dims=[10,10])
         self.downsample = downsample
         self.stride = stride
 
@@ -146,7 +146,7 @@ class ResNet_imagenet(ResNet):
                                bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.ReLU(inplace=True)
-        self.snn = nnan.NNaNUnit(dims = [10,10,10])
+        self.snn = nnan.NNaNUnit(dims = [10,10])
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, 64, layers[0])
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
@@ -188,7 +188,7 @@ class ResNet_cifar10(ResNet):
                                bias=False)
         self.bn1 = nn.BatchNorm2d(16)
         self.relu = nn.ReLU(inplace=True)
-        self.snn = nnan.NNaNUnit(dims = [10,10,10])
+        self.snn = nnan.NNaNUnit(dims = [10,10])
         self.maxpool = lambda x: x
         self.layer1 = self._make_layer(block, 16, n)
         self.layer2 = self._make_layer(block, 32, n, stride=2)
@@ -265,7 +265,7 @@ def resnet18_nan(**kwargs):
         return ResNet_cifar10(num_classes=num_classes,
                               block=BasicBlock, depth=depth)
 
-def resnet34(**kwargs):
+def resnet34_nan(**kwargs):
     num_classes, dataset = map(
         kwargs.get, ['num_classes', 'dataset'])
     depth = 34
