@@ -206,7 +206,7 @@ class ResNet_cifar10(ResNet):
                                    timer.tic(),
                                    snn,
                                    timer.toc(),
-                                   print ('Do once snn need {:.4f}ms ').format(timer.total_time*1000)
+                                   print('Do once snn need {:.4f}ms ').format(timer.total_time*1000)
                                    self.layer1,
                                    self.layer2,
                                    self.layer3,
