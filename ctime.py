@@ -19,7 +19,7 @@ parser.add_argument('--model', '-a', metavar='MODEL', default='resnet',
 
 
 
-model = models.__dict__[args.model]
+model = models.__dict__[parser.parse_args().model]
 
 class Timer(object):
     """A simple timer."""
