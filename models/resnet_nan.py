@@ -3,7 +3,7 @@ import torchvision.transforms as transforms
 import math
 import nnan
 
-__all__ = ['resnet_nan', 'resnet18_nan', 'resnet34', 'resnet50', 'resnet101', 'resnet152']
+__all__ = ['resnet_nan', 'resnet18_nan', 'resnet34_nan', 'resnet50', 'resnet101', 'resnet152']
 
 snn = nnan.NNaNUnit(dims=[10,10])
 
