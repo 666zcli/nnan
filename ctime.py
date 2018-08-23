@@ -4,11 +4,19 @@ import torch
 from torch.autograd import Variable
 import models
 
+parser = argparse.ArgumentParser(description='PyTorch measure time of net')
+
+parser.add_argument('--model', '-a', metavar='MODEL', default='resnet',
+                    choices=model_names,
+                    help='model architecture: ' +
+                    ' | '.join(model_names) +
+                    ' (default: alexnet)')
+
 model_names = sorted(name for name in models.__dict__
                      if name.islower() and not name.startswith("__")
                      and callable(models.__dict__[name]))
 
-model = models.__dict__[resnet34]
+model = models.__dict__[args.model]
 
 class Timer(object):
     """A simple timer."""
@@ -35,18 +43,18 @@ class Timer(object):
             return self.diff
 
 #GPUID = 1
-resnet34 = model()
+#resnet34 = model()
 #resnet34.cuda(GPUID)
 
 x = torch.rand(1,3,400,400)
 #x = Variable(x.cuda(GPUID))
 
 # preheat
-y = resnet34(x)
+y = model(x)
 timer = Timer()
 timer.tic()
 for i in xrange(100):
-  y = resnet34(x)
+  y = model(x)
 timer.toc()
 
 print ('Do once forward need {:.3f}ms ').format(timer.total_time*1000/100.0)
