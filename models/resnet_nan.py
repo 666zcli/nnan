@@ -266,7 +266,7 @@ def resnet18_nan(**kwargs):
         return ResNet_cifar10(num_classes=num_classes,
                               block=BasicBlock, depth=depth)
 
-def resnet34(**kwargs):
+def resnet34_nan(**kwargs):
     num_classes, dataset = map(
         kwargs.get, ['num_classes', 'dataset'])
     depth = 34
