@@ -3,6 +3,7 @@ import time
 import torch
 from torch.autograd import Variable
 import models
+import argparse
 
 parser = argparse.ArgumentParser(description='PyTorch measure time of net')
 
