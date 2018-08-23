@@ -51,13 +51,12 @@ class Timer(object):
 
 #x = torch.rand(1,3,400,400)
 #x = Variable(x.cuda(GPUID))
-'''
 # preheat
 #y = model(x)
-timer = Timer()
-timer.tic()
-for i in xrange(100):
-  y = model(x)
-timer.toc()
+#timer = Timer()
+#timer.tic()
+#for i in xrange(100):
+#  y = model(x)
+#timer.toc()
 
-print ('Do once forward need {:.3f}ms ').format(timer.total_time*1000/100.0)
+#print ('Do once forward need {:.3f}ms ').format(timer.total_time*1000/100.0)
