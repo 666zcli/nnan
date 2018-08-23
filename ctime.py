@@ -5,6 +5,10 @@ from torch.autograd import Variable
 import models
 import argparse
 
+model_names = sorted(name for name in models.__dict__
+                     if name.islower() and not name.startswith("__")
+                     and callable(models.__dict__[name]))
+
 parser = argparse.ArgumentParser(description='PyTorch measure time of net')
 
 parser.add_argument('--model', '-a', metavar='MODEL', default='resnet',
@@ -13,9 +17,7 @@ parser.add_argument('--model', '-a', metavar='MODEL', default='resnet',
                     ' | '.join(model_names) +
                     ' (default: alexnet)')
 
-model_names = sorted(name for name in models.__dict__
-                     if name.islower() and not name.startswith("__")
-                     and callable(models.__dict__[name]))
+
 
 model = models.__dict__[args.model]
 
