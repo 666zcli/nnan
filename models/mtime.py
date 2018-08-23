@@ -51,9 +51,9 @@ class Timer(object):
 
 #x = torch.rand(1,3,400,400)
 #x = Variable(x.cuda(GPUID))
-
+'''
 # preheat
-y = model(x)
+#y = model(x)
 timer = Timer()
 timer.tic()
 for i in xrange(100):
