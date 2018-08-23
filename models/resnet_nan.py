@@ -2,11 +2,11 @@ import torch.nn as nn
 import torchvision.transforms as transforms
 import math
 import nnan
-
+import mtime
 __all__ = ['resnet_nan', 'resnet18_nan', 'resnet34_nan', 'resnet50', 'resnet101', 'resnet152']
 
 snn = nnan.NNaNUnit(dims=[5,5,5])
-
+timer = mtime.Timer()
 
 def conv3x3(in_planes, out_planes, stride=1):
     "3x3 convolution with padding"
@@ -45,7 +45,10 @@ class BasicBlock(nn.Module):
         out = self.bn1(out)
         #out = self.relu(out)
         #out = self.snn(out)
+        timer.tic()
         out = snn(out)
+        timer.toc
+        print ('Do once snn need {:.3f}ms ').format(timer.total_time*1000)
 
         out = self.conv2(out)
         out = self.bn2(out)
