@@ -399,7 +399,10 @@ def make_dot(var, params=None):
 if __name__ == '__main__':  
     net = ResNet_cifar10(num_classes=10,
                               block=BasicBlock, depth=34)  
-    x = Variable(torch.randn(1, 1, 1024,1024))  
+    xs = np.linspace(-10, 10, 1000)
+    x = torch.from_numpy(xs)
+    x = Variable(input_var.type(torch.cuda.FloatTensor), volatile=True)
+    #x = Variable(torch.randn(1, 1, 1024,1024))  
     y = net(x)  
     g = make_dot(y)  
     g.view()  
