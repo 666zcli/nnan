@@ -3,6 +3,7 @@ import torchvision.transforms as transforms
 import math
 import nnan
 import torch
+import time
 __all__ = ['resnet_nan', 'resnet18_nan', 'resnet34_nan', 'resnet50', 'resnet101', 'resnet152']
 
 snn = nnan.NNaNUnit(dims=[5,5,5])
