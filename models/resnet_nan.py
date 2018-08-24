@@ -45,10 +45,12 @@ class BasicBlock(nn.Module):
         out = self.bn1(out)
         #out = self.relu(out)
         #out = self.snn(out)
-        #timer.tic()
+        torch.cuda.synchronize()
+        start = time.time()
         out = snn(out)
-        #timer.toc
-        #print ('Do once snn need {:.3f}ms ').format(timer.total_time*1000)
+        torch.cuda.synchronize()
+        end = time.time()
+        print ('Do once snn need {:.3f}ms ').format(end-start*1000)
 
         out = self.conv2(out)
         out = self.bn2(out)
@@ -203,9 +205,9 @@ class ResNet_cifar10(ResNet):
         self.feats = nn.Sequential(self.conv1,
                                    self.bn1,
                                    #self.relu,
-                                   timer.tic(),
+                                   #timer.tic(),
                                    snn,
-                                   timer.toc(),
+                                   #timer.toc(),
                                    #print ('Do once snn need {:.3f}ms ').format(timer.total_time*1000),
                                    self.layer1,
                                    self.layer2,
