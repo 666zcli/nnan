@@ -1,6 +1,6 @@
 from profiling import Profiling
 # from profiling import record
-import model.alexnet as alexnet
+import model.resnet_nan as resnet_nan
 
 import torch
 import torch.nn as nn
@@ -12,7 +12,7 @@ iter = 3
 #
 # Create model
 #
-model = alexnet.alexnet()
+model = resnet_nan.resnet34_nan()
 
 #
 # Use case 1: use it as context-manager
