@@ -223,7 +223,7 @@ class ResNet_cifar10(ResNet):
             164: {'lr':  1e-4}
         }
         
-print ('Do once snn need {:.3f}ms ').format(timer.total_time*1000)
+#print ('Do once snn need {:.3f}ms ').format(timer.total_time*1000)
 
 def resnet_nan(**kwargs):
     num_classes, depth, dataset = map(
