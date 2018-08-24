@@ -5,6 +5,7 @@ import math
 import nnan
 import torch
 import time
+import numpy as np
 from graphviz import Digraph 
 from torch.autograd import Variable
 __all__ = ['resnet_nan', 'resnet18_nan', 'resnet34_nan', 'resnet50', 'resnet101', 'resnet152']
