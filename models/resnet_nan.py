@@ -2,11 +2,11 @@ import torch.nn as nn
 import torchvision.transforms as transforms
 import math
 import nnan
-import mtime
+import torch
 __all__ = ['resnet_nan', 'resnet18_nan', 'resnet34_nan', 'resnet50', 'resnet101', 'resnet152']
 
 snn = nnan.NNaNUnit(dims=[5,5,5])
-timer = mtime.Timer()
+#timer = mtime.Timer()
 
 def conv3x3(in_planes, out_planes, stride=1):
     "3x3 convolution with padding"
