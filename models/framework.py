@@ -395,7 +395,7 @@ def make_dot(var, params=None):
     return dot
 
 if __name__ == '__main__':  
-    net = ResNet_cifar10(num_classes=num_classes,
+    net = ResNet_cifar10(num_classes=10,
                               block=BasicBlock, depth=depth)  
     x = Variable(torch.randn(1, 1, 1024,1024))  
     y = net(x)  
