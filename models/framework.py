@@ -5,6 +5,8 @@ import math
 import nnan
 import torch
 import time
+from graphviz import Digraph 
+from torch.autograd import Variable
 __all__ = ['resnet_nan', 'resnet18_nan', 'resnet34_nan', 'resnet50', 'resnet101', 'resnet152']
 
 snn = nnan.NNaNUnit(dims=[10,10,10])
