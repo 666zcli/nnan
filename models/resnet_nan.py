@@ -6,7 +6,7 @@ import torch
 import time
 __all__ = ['resnet_nan', 'resnet18_nan', 'resnet34_nan', 'resnet50', 'resnet101', 'resnet152']
 
-snn = nnan.NNaNUnit(dims=[5,5,5])
+snn = nnan.NNaNUnit(dims=[10,10,10])
 #timer = mtime.Timer()
 
 def conv3x3(in_planes, out_planes, stride=1):
