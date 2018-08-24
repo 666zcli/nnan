@@ -51,7 +51,7 @@ class BasicBlock(nn.Module):
         out = snn(out)
         torch.cuda.synchronize()
         end = time.time()
-        print ('Do once snn need {:.3f}ms ').format(end-start*1000)
+        print ('Do once snn need {:.3f}ms ').format((end-start)*1000)
 
         out = self.conv2(out)
         out = self.bn2(out)
