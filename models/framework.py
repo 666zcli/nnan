@@ -402,7 +402,7 @@ if __name__ == '__main__':
                               block=BasicBlock, depth=34)  
     xs = np.linspace(-10, 10, 1000)
     x = torch.from_numpy(xs)
-    x = Variable(input_var.type(torch.cuda.FloatTensor), volatile=True)
+    x = Variable(x.type(torch.cuda.FloatTensor), volatile=True)
     #x = Variable(torch.randn(1, 1, 1024,1024))  
     y = net(x)  
     g = make_dot(y)  
