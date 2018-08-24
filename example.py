@@ -1,6 +1,6 @@
 from profiling import Profiling
 # from profiling import record
-import model.resnet_nan as resnet_nan
+import models.resnet_nan as resnet_nan
 
 import torch
 import torch.nn as nn
