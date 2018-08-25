@@ -188,7 +188,7 @@ class ResNet_cifar10(ResNet):
                                bias=False)
         self.bn1 = nn.BatchNorm2d(16)
         self.relu = nn.ReLU(inplace=True)
-        self.snn = nnan.NNaNUnit(dims = [5,5,5,5])
+        self.snn = nnan.NNaNUnit(dims = [5,5,5])
         self.maxpool = lambda x: x
         self.layer1 = self._make_layer(block, 16, n)
         self.layer2 = self._make_layer(block, 32, n, stride=2)
