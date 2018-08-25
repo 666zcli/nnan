@@ -251,7 +251,7 @@ def main():
         
         if epoch == 0:
             #plot the function of nnan
-            xs = np.linspace(-10, 10, 1000)
+            xs = np.linspace(-5, 5, 1000)
             input_var = torch.from_numpy(xs)
             input_var = Variable(input_var.type(torch.cuda.FloatTensor), volatile=True)
             snnput = snn(input_var)
@@ -272,7 +272,7 @@ def main():
         
         #plot the function of nnan
         if epoch%20 == 0:
-            xs = np.linspace(-10, 10, 1000)
+            xs = np.linspace(-5, 5, 1000)
             input_var = torch.from_numpy(xs)
             input_var = Variable(input_var.type(torch.cuda.FloatTensor), volatile=True)
             snnput = snn(input_var)
