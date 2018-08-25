@@ -5,7 +5,7 @@ import nnan
 
 __all__ = ['resnet_nan', 'resnet18_nan', 'resnet34_nan', 'resnet50', 'resnet101', 'resnet152']
 
-snn = nnan.NNaNUnit(dims=[100,200,100])
+snn = nnan.NNaNUnit(dims=[10,10,10])
 
 
 def conv3x3(in_planes, out_planes, stride=1):
