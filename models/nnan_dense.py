@@ -22,6 +22,7 @@ class NNaNUnit(nn.Module):
     def forward(self, inputs):
         # reshape to a vector and compute
         orig_shape = inputs.size()
+        print orig_shape
         outputs = inputs.view(torch.numel(inputs), 1)
         for module in self._modules.values():
             #temp = Variable(outputs.type(torch.cuda.FloatTensor), volatile=True)
