@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
-import nnan
+import nnan_dense
 __all__ = ['cifar10_shallow_nan', 'cifar100_shallow_nan']
 
-snn = nnan.NNaNUnit(dims = [10, 10, 10])
+snn = nnan_dense.NNaNUnit(dims = [10, 10, 10])
 
 class AlexNet(nn.Module):
 
