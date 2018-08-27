@@ -90,7 +90,7 @@ def main():
     args.nonlinear = getattr(current_module, args.nonlinear)
     torch.cuda.set_device(0)
 
-    model = models.__dict__['nnan_unit'](dims=args.dims)
+    model = models.__dict__['nnan_denseunit'](dims=args.dims)
     criterion = nn.MSELoss(size_average=True, reduce=True)
     criterion.type(args.type)
     model.type(args.type)
