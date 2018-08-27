@@ -27,9 +27,10 @@ class NNaNUnit(nn.Module):
             #temp = Variable(outputs.type(torch.cuda.FloatTensor), volatile=True)
             #print temp.size()
             #print temp
-            output = module(outputs)
+            outputs = module(outputs)
+            print outputs.size()
             #print outputs.size()
-            outputs = output + outputs
+            #outputs = output + outputs
             
         # reshape back to the original shape
         return outputs.view(orig_shape)
