@@ -22,7 +22,7 @@ class NNaNUnit(nn.Module):
         orig_shape = inputs.size()
         outputs = inputs.view(torch.numel(inputs), 1)
         for module in self._modules.values():
-            temp = outputs
+            #temp = outputs
             #print temp.size()
             #print temp
             outputs = module(outputs)
