@@ -1,3 +1,4 @@
+from .nnan_dense import *
 from .nnan import *
 from .alexnet import *
 from .alexnetv2 import *
