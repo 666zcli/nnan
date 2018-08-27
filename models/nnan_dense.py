@@ -23,6 +23,7 @@ class NNaNUnit(nn.Module):
         outputs = inputs.view(torch.numel(inputs), 1)
         for module in self._modules.values():
             temp = outputs
+            print temp
             outputs = module(outputs)
             outputs = temp+outputs
         # reshape back to the original shape
