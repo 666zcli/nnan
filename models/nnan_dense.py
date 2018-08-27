@@ -27,7 +27,7 @@ class NNaNUnit(nn.Module):
             #print temp
             outputs = module(outputs)
             #print outputs.size()
-            outputs = temp + outputs
+            #outputs = temp + outputs
             
         # reshape back to the original shape
         return outputs.view(orig_shape)
