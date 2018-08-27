@@ -22,10 +22,11 @@ class NNaNUnit(nn.Module):
         orig_shape = inputs.size()
         outputs = inputs.view(torch.numel(inputs), 1)
         for module in self._modules.values():
-            temp = outputs
-            print temp
+            #temp = outputs
+            #print temp
             outputs = module(outputs)
-            outputs = temp+outputs
+            #outputs = temp+outputs
+            print outputs
         # reshape back to the original shape
         return outputs.view(orig_shape)
 
