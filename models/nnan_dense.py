@@ -24,7 +24,7 @@ class NNaNUnit(nn.Module):
         for module in self._modules.values():
             temp = outputs
             outputs = module(outputs)
-            outputs = torch.cat((temp,outputs), 1)
+            outputs = temp+outputs
         # reshape back to the original shape
         return outputs.view(orig_shape)
 
