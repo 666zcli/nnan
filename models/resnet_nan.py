@@ -2,11 +2,11 @@ import torch.nn as nn
 import torchvision.transforms as transforms
 import math
 #import nnan
-import nnan
+import nnan_dense
 
 __all__ = ['resnet_nan', 'resnet18_nan', 'resnet34_nan', 'resnet50', 'resnet101', 'resnet152']
 
-snn = nnan.NNaNUnit(dims=[10,10])
+snn = nnan_dense.NNaNUnit(dims=[10,10])
 
 
 def conv3x3(in_planes, out_planes, stride=1):
