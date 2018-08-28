@@ -29,7 +29,7 @@ class NNaNUnit(nn.Module):
             #print temp.size()
             #print temp
             output = module(outputs)
-            #print output.size()
+            print output.size()
             #print outputs.size()
             outputs = output + outputs
             #print outputs.size()
