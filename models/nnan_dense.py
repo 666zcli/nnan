@@ -37,7 +37,7 @@ class NNaNUnit(nn.Module):
             #print outputs.size()
             
         # reshape back to the original shape
-        return outputs.view(orig_shape)
+        return output.view(orig_shape)
 
 
 def nnan_denseunit(**kwargs):
