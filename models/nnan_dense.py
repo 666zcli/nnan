@@ -22,7 +22,7 @@ class NNaNUnit(nn.Module):
     def forward(self, inputs):
         # reshape to a vector and compute
         orig_shape = inputs.size()
-        print orig_shape
+        #print orig_shape
         outputs = inputs.view(torch.numel(inputs), 1)
         output = outputs
         for module in self._modules.values():
