@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torchvision.transforms as transforms
 import math
-import nnan
+import nnan_dense
 
 __all__ = ['resnet_nan', 'resnet18_nan', 'resnet34_nan', 'resnet50', 'resnet101', 'resnet152']
 
@@ -32,7 +32,8 @@ class BasicBlock(nn.Module):
         self.conv1 = conv3x3(inplanes, planes, stride)
         self.bn1 = nn.BatchNorm2d(planes)
         self.relu = nn.ReLU(inplace=True)
-        self.snn = nnan.NNaNUnit(dims=[15,15])
+        #self.snn = nnan.NNaNUnit(dims=[15,15])
+        self.snn = nnan_dense.NNaNUnit(dims=[15,15])
         self.conv2 = conv3x3(planes, planes)
         self.bn2 = nn.BatchNorm2d(planes)
         self.downsample = downsample
@@ -73,7 +74,7 @@ class Bottleneck(nn.Module):
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(planes * 4)
         #self.relu = nn.ReLU(inplace=True)
-        self.snn = nnan.NNaNUnit(dims=[15,15])
+        #self.snn = nnan.NNaNUnit(dims=[15,15])
         self.downsample = downsample
         self.stride = stride
 
@@ -83,7 +84,7 @@ class Bottleneck(nn.Module):
         out = self.conv1(x)
         out = self.bn1(out)
         #out = self.relu(out)
-        out = self.snn(out)
+        #out = self.snn(out)
         #out = snn(out)
 
         out = self.conv2(out)
@@ -188,7 +189,8 @@ class ResNet_cifar10(ResNet):
                                bias=False)
         self.bn1 = nn.BatchNorm2d(16)
         self.relu = nn.ReLU(inplace=True)
-        self.snn = nnan.NNaNUnit(dims = [10,10,10])
+        #self.snn = nnan.NNaNUnit(dims = [10,10,10])
+        self.snn = nnan_dense.NNaNUnit(dims = [10,10,10])
         self.maxpool = lambda x: x
         self.layer1 = self._make_layer(block, 16, n)
         self.layer2 = self._make_layer(block, 32, n, stride=2)
