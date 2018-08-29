@@ -32,7 +32,7 @@ class NNaNUnit(nn.Module):
             output = module(outputs)
             output = output.view(output.size(0), -1)
             outputs = outputs.view(output.size(0), -1)
-            outputs = torch.cat((output, outputs), 0)
+            outputs = torch.cat([output, outputs], dim=1)
             #outputs = output + outputs
             #print outputs.size()
             
