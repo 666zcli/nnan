@@ -30,7 +30,7 @@ class NNaNUnit(nn.Module):
             #print temp.size()
             #outputs = output +outputs
             output = module(outputs)
-            outputs = output +outputs
+            outputs = torch.cat((output, outputs), 1)
             #print output.size()
             #print outputs.size()
             
