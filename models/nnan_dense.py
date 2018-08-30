@@ -29,18 +29,18 @@ class NNaNUnit(nn.Module):
             #temp = Variable(outputs.type(torch.cuda.FloatTensor), volatile=True)
             #print temp.size()
             #outputs = output +outputs
-            output = module(outputs)
-            output = output.view(output.size(0), -1)
-            outputs = outputs.view(output.size(0), -1)
-            outputs = torch.cat([output, outputs], dim=1)
+            outputs = module(outputs)
+            #output = output.view(output.size(0), -1)
+            #outputs = outputs.view(output.size(0), -1)
+            #outputs = torch.cat([output, outputs], dim=1)
             #outputs = output + outputs
-            #print outputs.size()
+            
             
             
             #print outputs.size()
             
         # reshape back to the original shape
-        return output.view(orig_shape)
+        return output.view(orig_shape) + inputs
 
 
 def nnan_denseunit(**kwargs):
