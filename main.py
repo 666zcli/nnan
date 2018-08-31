@@ -257,7 +257,7 @@ def main():
                 input_var = torch.from_numpy(xs)
                 input_var = Variable(input_var.type(torch.cuda.FloatTensor), volatile=True)
                 snnput = m(input_var)
-                ys = m.data.cpu().numpy()
+                ys = snnput.data.cpu().numpy()
                 plt.plot(xs, ys, 'r--', label='learned')
                 plt.legend()
                 plt.title('Function:%d'%epoch)
@@ -290,12 +290,12 @@ def main():
         
        #plot the function of nnan for no shared nnan
         for m in model.modules():
-	    if isinstance(m, snn):
+	    if isinstance(m, nnan_dense.NNaNUnit):
 	        xs = np.linspace(-10, 10, 1000)
                 input_var = torch.from_numpy(xs)
                 input_var = Variable(input_var.type(torch.cuda.FloatTensor), volatile=True)
                 snnput = m(input_var)
-                ys = m.data.cpu().numpy()
+                ys = snnput.data.cpu().numpy()
                 plt.plot(xs, ys, 'r--', label='learned')
                 plt.legend()
                 plt.title('Function:%d'%epoch)
