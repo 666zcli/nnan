@@ -128,7 +128,7 @@ def main():
       raise OSError('Directory {%s} exists. Use a new one.' % save_path)
     
     #img_dir = '/home/zl198/nnan/img_func/'
-    '''
+    
     img_dir = './img_func/'
     save_img = os.path.join(img_dir, args.save)
     print(save_img)
@@ -136,7 +136,7 @@ def main():
         os.makedirs(save_img)
     else:
        raise OSError('Directory {%s} exists. Use a new one.' % save_img)
-    '''
+    
     setup_logging(os.path.join(save_path, 'log.txt'))
     results_file = os.path.join(save_path, 'results.%s')
     results = ResultsLog(results_file % 'csv', results_file % 'html')
@@ -273,7 +273,22 @@ def main():
         train_loss, train_prec1, train_prec5 = [
             train_result[r] for r in ['loss', 'prec1', 'prec5']]
         
-        #plot the function of nnan
+       #plot the function of nnan for no shared nnan
+        for m in model.modules
+	    if isinstance(m, snn):
+	        xs = np.linspace(-10, 10, 1000)
+                input_var = torch.from_numpy(xs)
+                input_var = Variable(input_var.type(torch.cuda.FloatTensor), volatile=True)
+                snnput = m(input_var)
+                ys = m.data.cpu().numpy()
+                plt.plot(xs, ys, 'r--', label='learned')
+                plt.legend()
+                plt.title('Function:%d'%epoch)
+                plt.savefig('%s/%d.jpg'%(str(save_img),epoch))
+                plt.clf()
+                plt.cla()
+                plt.close()
+	        
 	'''
         if epoch%20 == 0:
             xs = np.linspace(-10, 10, 1000)
