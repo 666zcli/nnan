@@ -250,6 +250,20 @@ def main():
 
     for epoch in range(args.start_epoch, args.epochs):
         optimizer = adjust_optimizer(optimizer, epoch, regime)
+        for m in model.modules():
+	    if isinstance(m, nnan_dense.NNaNUnit):
+	    xs = np.linspace(-10, 10, 1000)
+            input_var = torch.from_numpy(xs)
+            input_var = Variable(input_var.type(torch.cuda.FloatTensor), volatile=True)
+            snnput = m(input_var)
+            ys = m.data.cpu().numpy()
+            plt.plot(xs, ys, 'r--', label='learned')
+            plt.legend()
+            plt.title('Function:%d'%epoch)
+            plt.savefig('%s/original.jpg'%(str(save_img)))
+            plt.clf()
+            plt.cla()
+            plt.close()
         '''
         if epoch == 0:
             #plot the function of nnan
