@@ -24,7 +24,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 #from models.resnet_nan import snn
-import models.nnan_NNaNUnit
+import models.nnan_dense
 
 model_names = sorted(name for name in models.__dict__
                      if name.islower() and not name.startswith("__")
