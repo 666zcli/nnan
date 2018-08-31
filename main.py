@@ -252,7 +252,7 @@ def main():
     for epoch in range(args.start_epoch, args.epochs):
         optimizer = adjust_optimizer(optimizer, epoch, regime)
         for m in model.modules():
-	    if isinstance(m, nnan_dense.NNaNUnit):
+	    if isinstance(m, NNaNUnit):
 	        xs = np.linspace(-10, 10, 1000)
                 input_var = torch.from_numpy(xs)
                 input_var = Variable(input_var.type(torch.cuda.FloatTensor), volatile=True)
