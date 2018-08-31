@@ -24,7 +24,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 #from models.resnet_nan import snn
-import models.nnan_dense
+import models.nnan_dense as nnan_dense
 
 model_names = sorted(name for name in models.__dict__
                      if name.islower() and not name.startswith("__")
@@ -252,7 +252,7 @@ def main():
     for epoch in range(args.start_epoch, args.epochs):
         optimizer = adjust_optimizer(optimizer, epoch, regime)
         for m in model.modules():
-	    if isinstance(m, NNaNUnit):
+	    if isinstance(m, nnan_dense.NNaNUnit):
 	        xs = np.linspace(-10, 10, 1000)
                 input_var = torch.from_numpy(xs)
                 input_var = Variable(input_var.type(torch.cuda.FloatTensor), volatile=True)
