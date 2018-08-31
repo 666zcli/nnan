@@ -274,7 +274,7 @@ def main():
             train_result[r] for r in ['loss', 'prec1', 'prec5']]
         
        #plot the function of nnan for no shared nnan
-        for m in model.modules
+        for m in model.modules():
 	    if isinstance(m, snn):
 	        xs = np.linspace(-10, 10, 1000)
                 input_var = torch.from_numpy(xs)
