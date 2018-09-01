@@ -4,9 +4,9 @@
 ## Usage
 
 ```
-python main.py --dataset mnist --model mnist_f1 --epochs 200 -b 128 --mini-batch-size 128 --no-lr_bb_fix --no-regime_bb_fix --gpus 0
+python main.py --dataset cifar10 --model resnet34_nan --epochs 100 -b 128 --mini-batch-size 128 --no-lr_bb_fix --no-regime_bb_fix --gpus 0
 
-python evaluate.py --model alexnet --dataset imagenet -b 100 --gpus 1 --evaluate TrainingResults/2018-03-17_11-28-33/model_best.pth.tar --mode val --no-augment
+python evaluate.py --model resnet34_nan --dataset cifar10 -b 100 --gpus 1 --evaluate TrainingResults/2018-03-17_11-28-33/model_best.pth.tar --mode val --no-augment
 ```
 
 ## Dependencies
