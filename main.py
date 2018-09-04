@@ -109,6 +109,9 @@ parser.add_argument('-e', '--evaluate', type=str, metavar='FILE',
                     help='evaluate model FILE on validation set')
 parser.add_argument('--batch-multiplier', '-bm', default=1, type=int,
                     metavar='BM', help='The number of batchs to delay parameter updating (default: 1). Used for very large-batch training using limited memory')
+parser.add_argument('--gamma', default=0.1,
+                    type=float, help='Gamma update for SGD')
+gamma = 0.1
 
 def main():
     #torch.manual_seed(123)
@@ -540,6 +543,19 @@ def validate(data_loader, model, criterion, epoch):
     model.eval()
     return forward(data_loader, model, criterion, epoch,
                    training=False, optimizer=None)
+
+def adjust_learning_rate(optimizer, epoch, step_index, iteration, epoch_size):
+    """Sets the learning rate 
+    # Adapted from PyTorch Imagenet example:
+    # https://github.com/pytorch/examples/blob/master/imagenet/main.py
+    """
+    if epoch < 6:
+        lr = 1e-6 + (args.lr-1e-6) * iteration / (epoch_size * 5) 
+    else:
+        lr = args.lr * (gamma ** (epoch))
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
+    return lr
 
 
 if __name__ == '__main__':
