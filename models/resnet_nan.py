@@ -33,7 +33,7 @@ class BasicBlock(nn.Module):
         self.bn1 = nn.BatchNorm2d(planes)
         self.relu = nn.ReLU(inplace=True)
         #self.snn = nnan.NNaNUnit(dims=[15,15])
-        self.snn = nnan_dense.NNaNUnit(dims=[30,30])
+        self.snn = nnan_dense.NNaNUnit(dims=[20,20])
         self.conv2 = conv3x3(planes, planes)
         self.bn2 = nn.BatchNorm2d(planes)
         self.downsample = downsample
