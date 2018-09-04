@@ -254,20 +254,22 @@ def main():
 
     for epoch in range(args.start_epoch, args.epochs):
         optimizer = adjust_optimizer(optimizer, epoch, regime)
-        for m in model.modules():
-	    if isinstance(m, nnan_dense.NNaNUnit):
-	        xs = np.linspace(-10, 10, 1000)
-                input_var = torch.from_numpy(xs)
-                input_var = Variable(input_var.type(torch.cuda.FloatTensor), volatile=True)
-                snnput = m(input_var)
-                ys = snnput.data.cpu().numpy()
-                plt.plot(xs, ys, 'r--', label='learned')
-                plt.legend()
-                plt.title('Function:%d'%epoch)
-                plt.savefig('%s/original.jpg'%(str(save_img)))
-                plt.clf()
-                plt.cla()
-                plt.close()
+	adjust_learning_rate(optimizer, epoch)
+	if epoch == 0:
+            for m in model.modules():
+	        if isinstance(m, nnan_dense.NNaNUnit):
+	            xs = np.linspace(-10, 10, 1000)
+                    input_var = torch.from_numpy(xs)
+                    input_var = Variable(input_var.type(torch.cuda.FloatTensor), volatile=True)
+                    snnput = m(input_var)
+                    ys = snnput.data.cpu().numpy()
+                    plt.plot(xs, ys, 'r--', label='learned')
+                    plt.legend()
+                    plt.title('Function:%d'%epoch)
+                    plt.savefig('%s/original.jpg'%(str(save_img)))
+                    plt.clf()
+                    plt.cla()
+                    plt.close()
         '''
         if epoch == 0:
             #plot the function of nnan
@@ -292,21 +294,22 @@ def main():
             train_result[r] for r in ['loss', 'prec1', 'prec5']]
         
        #plot the function of nnan for no shared nnan
-        for m in model.modules():
-	    if isinstance(m, nnan_dense.NNaNUnit):
-	        xs = np.linspace(-10, 10, 1000)
-                input_var = torch.from_numpy(xs)
-                input_var = Variable(input_var.type(torch.cuda.FloatTensor), volatile=True)
-                snnput = m(input_var)
-                ys = snnput.data.cpu().numpy()
-                plt.plot(xs, ys, 'r--', label='learned')
-                plt.legend()
-                plt.title('Function:%d'%epoch)
-                plt.savefig('%s/%d.jpg'%(str(save_img),epoch))
-                plt.clf()
-                plt.cla()
-                plt.close()
-	        
+        if epoch%20 == 0:
+            for m in model.modules():
+	        if isinstance(m, nnan_dense.NNaNUnit):
+	            xs = np.linspace(-10, 10, 1000)
+                    input_var = torch.from_numpy(xs)
+                    input_var = Variable(input_var.type(torch.cuda.FloatTensor), volatile=True)
+                    snnput = m(input_var)
+                    ys = snnput.data.cpu().numpy()
+                    plt.plot(xs, ys, 'r--', label='learned')
+                    plt.legend()
+                    plt.title('Function:%d'%epoch)
+                    plt.savefig('%s/%d.jpg'%(str(save_img),epoch))
+                    plt.clf()
+                    plt.cla()
+                    plt.close()
+  	        
 	'''
         if epoch%20 == 0:
             xs = np.linspace(-10, 10, 1000)
@@ -544,18 +547,14 @@ def validate(data_loader, model, criterion, epoch):
     return forward(data_loader, model, criterion, epoch,
                    training=False, optimizer=None)
 
-def adjust_learning_rate(optimizer, epoch, step_index, iteration, epoch_size):
+def adjust_learning_rate(optimizer, epoch):
     """Sets the learning rate 
     # Adapted from PyTorch Imagenet example:
     # https://github.com/pytorch/examples/blob/master/imagenet/main.py
     """
-    if epoch < 6:
-        lr = 1e-6 + (args.lr-1e-6) * iteration / (epoch_size * 5) 
-    else:
-        lr = args.lr * (gamma ** (epoch))
+    lr = args.lr * (0.1 ** (epoch // 30))
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
-    return lr
 
 
 if __name__ == '__main__':
