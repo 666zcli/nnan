@@ -24,6 +24,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 #from models.resnet_nan import snn
+import torch.nn.init as init
 import models.nnan_dense as nnan_dense
 
 model_names = sorted(name for name in models.__dict__
