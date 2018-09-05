@@ -166,7 +166,7 @@ def main():
 
     model = model(**model_config)
     #useing orthogonal kernek to weights init
-    weights_init(model)
+   
     logging.info("created model with configuration: %s", model_config)
 
     # optionally resume from a checkpoint
@@ -253,7 +253,8 @@ def main():
     print({i: list(w.size())
            for (i, w) in enumerate(list(model.parameters()))})
     init_weights = [w.data.cpu().clone() for w in list(model.parameters())]
-
+    weights_init(model)
+	
     for epoch in range(args.start_epoch, args.epochs):
         optimizer = adjust_optimizer(optimizer, epoch, regime)
         adjust_learning_rate(optimizer, epoch)
