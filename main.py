@@ -256,7 +256,7 @@ def main():
 
     for epoch in range(args.start_epoch, args.epochs):
         optimizer = adjust_optimizer(optimizer, epoch, regime)
-	adjust_learning_rate(optimizer, epoch)
+        adjust_learning_rate(optimizer, epoch)
 	if epoch == 0:
             for m in model.modules():
 	        if isinstance(m, nnan_dense.NNaNUnit):
