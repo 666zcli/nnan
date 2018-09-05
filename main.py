@@ -719,10 +719,10 @@ def weights_init(net):
         if isinstance(m, nn.Conv2d):
             if m.weight.shape[0] > m.weight.shape[1]:
                 _orthogonal_kernel(m.weight.data)
-                m.bias.data.zero_()
+               # m.bias.data.zero_()
             else:
                 init.orthogonal(m.weight.data)
-                m.bias.data.zero_()
+               # m.bias.data.zero_()
 
         elif isinstance(m, nn.ConvTranspose2d):
             if m.weight.shape[1] > m.weight.shape[0]:
@@ -738,7 +738,7 @@ def weights_init(net):
             #m.bias.data.zero_()
         elif isinstance(m, nn.BatchNorm2d):
             m.weight.data.normal_(1.0, 0.02)
-            m.bias.data.zero_()
+           # m.bias.data.zero_()
 
 
 if __name__ == '__main__':
