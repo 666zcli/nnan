@@ -166,7 +166,7 @@ def main():
 
     model = model(**model_config)
     #useing orthogonal kernek to weights init
-    weights_init(model)
+   # weights_init(model)
     logging.info("created model with configuration: %s", model_config)
 
     # optionally resume from a checkpoint
