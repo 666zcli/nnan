@@ -206,7 +206,17 @@ class ResNet_cifar10(ResNet):
                                    self.layer2,
                                    self.layer3,
                                    self.avgpool)
-        init_model(self)
+        #init_model(self)
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                if self.conv_init == self.init_supported[0]:
+                    enn.init.conv_delta_orthogonal_(m.weight)
+                else:
+                    nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+            elif isinstance(m, nn.BatchNorm2d):
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
+
 
         self.regime = {
             0: {'optimizer': 'SGD', 'lr':  1e-1,
