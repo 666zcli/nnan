@@ -181,9 +181,16 @@ class ResNet_imagenet(ResNet):
 class ResNet_cifar10(ResNet):
 
     def __init__(self, num_classes=10,
-                 block=BasicBlock, depth=18):
+                 block=BasicBlock, depth=18, conv_init='conv_delta_orthogonal'):
         super(ResNet_cifar10, self).__init__()
         self.inplanes = 16
+        self.init_supported = ['conv_delta_orthogonal', 'kaiming_normal']
+        if conv_init in self.init_supported:
+            self.conv_init = conv_init
+        else:
+            print('{} is not supported'.format(conv_init))
+            self.conv_init = 'kaiming_normal'
+        print('initialize conv by {}'.format(conv_init))
         n = int((depth - 2) / 6)
         self.conv1 = nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1,
                                bias=False)
