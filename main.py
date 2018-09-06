@@ -560,8 +560,8 @@ def adjust_learning_rate(optimizer, epoch):
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
 	
-#generating uniform orthogonal matrix
-def _orthogonal_matrix(dim):
+
+def genOrthgonal(dim):
     a = torch.zeros((dim, dim)).normal_(0, 1)
     q, r = torch.qr(a)
     d = torch.diag(r, 0).sign()
@@ -570,176 +570,24 @@ def _orthogonal_matrix(dim):
     q.mul_(d_exp)
     return q
 
-#generating orthogonal projection matrix,i.e. the P,Q of Algorithm1 in the original
-def _symmetric_projection(n):
-    """Compute a n x n symmetric projection matrix.
-    Args:
-      n: Dimension.
-    Returns:
-      A n x n orthogonal projection matrix, i.e. a matrix P s.t. P=P*P, P=P^T.
-    """
-    q = _orthogonal_matrix(n)
-    # randomly zeroing out some columns
-    # mask = math.cast(random_ops.random_normal([n], seed=self.seed) > 0,
-    # #                      self.dtype)
-    mask = torch.randn(n)
 
-    c = torch.mul(mask,q)
-    U,_,_= torch.svd(c)
-    U1 = U[:,0].view(len(U[:,0]),1)
-    P = torch.mm(U1,U1.t())
-    P_orth_pro_mat = torch.eye(n)-P
-    return P_orth_pro_mat
+def makeDeltaOrthogonal(weights):
+    rows = weights.size(0)
+    cols = weights.size(1)
+    if rows > cols:
+        print("In_filters should not be greater than out_filters.")
+    weights.data.fill_(0)
+    dim = max(rows, cols)
+    q = genOrthgonal(dim)
+    mid1 = weights.size(2) // 2
+    mid2 = weights.size(3) // 2
+    weights[:, :, mid1, mid2] = q[:weights.size(0), :weights.size(1)]
 
-#generating block matrix the step2 of the Algorithm1 in the original
-def _block_orth(p1, p2):
-    """Construct a 2 x 2 kernel. Used to construct orthgonal kernel.
-    Args:
-      p1: A symmetric projection matrix (Square).
-      p2: A symmetric projection matrix (Square).
-    Returns:
-      A 2 x 2 kernel [[p1p2,         p1(1-p2)],
-                      [(1-p1)p2, (1-p1)(1-p2)]].
-    Raises:
-      ValueError: If the dimensions of p1 and p2 are different.
-    """
-    if p1.shape != p2.shape:
-        raise ValueError("The dimension of the matrices must be the same.")
-    kernel2x2 = {}#Block matrices are contained by a dictionary
-    eye = torch.eye(p1.shape[0])
-    kernel2x2[0, 0] = torch.mm(p1, p2)
-    kernel2x2[0, 1] = torch.mm(p1, (eye - p2))
-    kernel2x2[1, 0] = torch.mm((eye - p1), p2)
-    kernel2x2[1, 1] = torch.mm((eye - p1), (eye - p2))
-
-    return kernel2x2
-
-#compute convolution operator of equation2.17 in the original
-def _matrix_conv(m1, m2):
-    """Matrix convolution.
-    Args:
-      m1: A k x k dictionary, each element is a n x n matrix.
-      m2: A l x l dictionary, each element is a n x n matrix.
-    Returns:
-      (k + l - 1) * (k + l - 1) dictionary each element is a n x n matrix.
-    Raises:
-      ValueError: if the entries of m1 and m2 are of different dimensions.
-    """
-
-    n = m1[0, 0].shape[0]
-    if n != m2[0, 0].shape[0]:
-        raise ValueError("The entries in matrices m1 and m2 "
-                         "must have the same dimensions!")
-    k = int(np.sqrt(len(m1)))
-    l = int(np.sqrt(len(m2)))
-    result = {}
-    size = k + l - 1
-    # Compute matrix convolution between m1 and m2.
-    for i in range(size):
-        for j in range(size):
-            result[i, j] = torch.zeros(n,n)
-            for index1 in range(min(k, i + 1)):
-                for index2 in range(min(k, j + 1)):
-                    if (i - index1) < l and (j - index2) < l:
-                        result[i, j] += torch.mm(m1[index1, index2],
-                                                        m2[i - index1, j - index2])
-    return result
-
-def _dict_to_tensor(x, k1, k2):
-    """Convert a dictionary to a tensor.
-    Args:
-      x: A k1 * k2 dictionary.
-      k1: First dimension of x.
-      k2: Second dimension of x.
-    Returns:
-      A k1 * k2 tensor.
-    """
-    return torch.stack([torch.stack([x[i, j] for j in range(k2)])
-                            for i in range(k1)])
-
-#generating a random 2D orthogonal Convolution kernel
-def _orthogonal_kernel(tensor):
-    """Construct orthogonal kernel for convolution.
-    Args:
-      ksize: Kernel size.
-      cin: Number of input channels.
-      cout: Number of output channels.
-    Returns:
-      An [ksize, ksize, cin, cout] orthogonal kernel.
-    Raises:
-      ValueError: If cin > cout.
-    """
-    ksize = tensor.shape[2]
-    cin = tensor.shape[1]
-    cout = tensor.shape[0]
-    if cin > cout:
-        raise ValueError("The number of input channels cannot exceed "
-                         "the number of output channels.")
-    orth = _orthogonal_matrix(cout)[0:cin, :]#这就是算法1中的H
-    if ksize == 1:
-        return torch.unsqueeze(torch.unsqueeze(orth,0),0)
-
-    p = _block_orth(_symmetric_projection(cout),
-                         _symmetric_projection(cout))
-    for _ in range(ksize - 2):
-        temp = _block_orth(_symmetric_projection(cout),
-                                _symmetric_projection(cout))
-        p = _matrix_conv(p, temp)
-    for i in range(ksize):
-        for j in range(ksize):
-            p[i, j] = torch.mm(orth, p[i, j])
-    tensor.copy_(_dict_to_tensor(p, ksize, ksize).permute(3,2,1,0))
-    return tensor
-
-#defining 2DConvT orthogonal initialization kernel
-def ConvT_orth_kernel2D(tensor):
-    ksize = tensor.shape[2]
-    cin = tensor.shape[0]
-    cout = tensor.shape[1]
-    if cin > cout:
-        raise ValueError("The number of input channels cannot exceed "
-                         "the number of output channels.")
-    orth = _orthogonal_matrix(cout)[0:cin, :]  # 这就是算法1中的H
-    if ksize == 1:
-        return torch.unsqueeze(torch.unsqueeze(orth, 0), 0)
-
-    p = _block_orth(_symmetric_projection(cout),
-                    _symmetric_projection(cout))
-    for _ in range(ksize - 2):
-        temp = _block_orth(_symmetric_projection(cout),
-                           _symmetric_projection(cout))
-        p = _matrix_conv(p, temp)
-    for i in range(ksize):
-        for j in range(ksize):
-            p[i, j] = torch.mm(orth, p[i, j])
-    tensor.copy_(_dict_to_tensor(p, ksize, ksize).permute(2, 3, 1, 0))
-    return tensor
-#Call method
 def weights_init(net):
     for m in net.modules():
-        if isinstance(m, nn.Conv2d):
-            if m.weight.shape[0] > m.weight.shape[1]:
-                _orthogonal_kernel(m.weight.data)
-               # m.bias.data.zero_()
-            else:
-                init.orthogonal(m.weight.data)
-               # m.bias.data.zero_()
+        makeDeltaOrthogonal(m.weight)
+        
 
-        elif isinstance(m, nn.ConvTranspose2d):
-            if m.weight.shape[1] > m.weight.shape[0]:
-                ConvT_orth_kernel2D(m.weight.data)
-               # m.bias.data.zero_()
-            else:
-                init.orthogonal(m.weight.data)
-               # m.bias.data.zero_()
-
-           # m.bias.data.zero_()
-        elif isinstance(m, nn.Linear):
-            m.weight.data.normal_(0, 0.02)
-            #m.bias.data.zero_()
-        elif isinstance(m, nn.BatchNorm2d):
-            m.weight.data.normal_(1.0, 0.02)
-           # m.bias.data.zero_()
 
 
 if __name__ == '__main__':
