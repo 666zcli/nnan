@@ -2,6 +2,7 @@ import torch.nn as nn
 import torchvision.transforms as transforms
 import math
 import nnan_dense
+import _ext.nn as enn
 
 __all__ = ['resnet_nan', 'resnet18_nan', 'resnet34_nan', 'resnet50', 'resnet101', 'resnet152']
 
