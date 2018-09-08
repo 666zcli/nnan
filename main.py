@@ -254,26 +254,27 @@ def main():
     print({i: list(w.size())
            for (i, w) in enumerate(list(model.parameters()))})
     init_weights = [w.data.cpu().clone() for w in list(model.parameters())]
-    weights_init(model)
+    
 	
     for epoch in range(args.start_epoch, args.epochs):
         optimizer = adjust_optimizer(optimizer, epoch, regime)
-      #  adjust_learning_rate(optimizer, epoch)
-        if epoch == 0:
-            for m in model.modules():
-	        if isinstance(m, nnan_dense.NNaNUnit):
-	            xs = np.linspace(-10, 10, 1000)
-                    input_var = torch.from_numpy(xs)
-                    input_var = Variable(input_var.type(torch.cuda.FloatTensor), volatile=True)
-                    snnput = m(input_var)
-                    ys = snnput.data.cpu().numpy()
-                    plt.plot(xs, ys, 'r--', label='learned')
-                    plt.legend()
-                    plt.title('Function:%d'%epoch)
-                    plt.savefig('%s/original.jpg'%(str(save_img)))
-                    plt.clf()
-                    plt.cla()
-                    plt.close()
+              #  adjust_learning_rate(optimizer, epoch)
+        with torch.no_grad():
+            if epoch == 0:
+                for m in model.modules():
+                    if isinstance(m, nnan_dense.NNaNUnit):
+                        xs = np.linspace(-10, 10, 1000)
+                        input_var = torch.from_numpy(xs)
+                        input_var = Variable(input_var.type(torch.cuda.FloatTensor))
+                        snnput = m(input_var)
+                        ys = snnput.data.cpu().numpy()
+                        plt.plot(xs, ys, 'r--', label='learned')
+                        plt.legend()
+                        plt.title('Function:%d'%epoch)
+                        plt.savefig('%s/original.jpg'%(str(save_img)))
+                        plt.clf()
+                        plt.cla()
+                        plt.close()
         '''
         if epoch == 0:
             #plot the function of nnan
@@ -295,25 +296,26 @@ def main():
         train_result = train(train_loader, model, criterion, epoch, optimizer)
 
         train_loss, train_prec1, train_prec5 = [
-            train_result[r] for r in ['loss', 'prec1', 'prec5']]
+            train_result[r].data.tolist() for r in ['loss', 'prec1', 'prec5']]
         
        #plot the function of nnan for no shared nnan
-        if epoch%20 == 0:
-            for m in model.modules():
-	        if isinstance(m, nnan_dense.NNaNUnit):
-	            xs = np.linspace(-10, 10, 1000)
-                    input_var = torch.from_numpy(xs)
-                    input_var = Variable(input_var.type(torch.cuda.FloatTensor), volatile=True)
-                    snnput = m(input_var)
-                    ys = snnput.data.cpu().numpy()
-                    plt.plot(xs, ys, 'r--', label='learned')
-                    plt.legend()
-                    plt.title('Function:%d'%epoch)
-                    plt.savefig('%s/%d.jpg'%(str(save_img),epoch))
-                    plt.clf()
-                    plt.cla()
-                    plt.close()
-  	        
+        with torch.no_grad():
+            if epoch%20 == 0:
+                for m in model.modules():
+                    if isinstance(m, nnan_dense.NNaNUnit):
+                        xs = np.linspace(-10, 10, 1000)
+                        input_var = torch.from_numpy(xs)
+                        input_var = Variable(input_var.type(torch.cuda.FloatTensor))
+                        snnput = m(input_var)
+                        ys = snnput.data.cpu().numpy()
+                        plt.plot(xs, ys, 'r--', label='learned')
+                        plt.legend()
+                        plt.title('Function:%d'%epoch)
+                        plt.savefig('%s/%d.jpg'%(str(save_img),epoch))
+                        plt.clf()
+                        plt.cla()
+                        plt.close()
+      	        
 	'''
         if epoch%20 == 0:
             xs = np.linspace(-10, 10, 1000)
@@ -329,12 +331,12 @@ def main():
             plt.cla()
             plt.close()
 	 '''
-	    
+	       
         
 
         # evaluate on validation set
         val_result = validate(val_loader, model, criterion, epoch)
-        val_loss, val_prec1, val_prec5 = [val_result[r]
+        val_loss, val_prec1, val_prec5 = [val_result[r].data.tolist()
                                           for r in ['loss', 'prec1', 'prec5']]
 
         # remember best prec@1 and save checkpoint
@@ -367,7 +369,7 @@ def main():
         #Enable to measure more layers
         idxs = [0]#,2,4,6,7,8,9,10]#[0, 12, 45, 63]
 
-        step_dist_epoch = {'step_dist_n%s' % k: (w.data.cpu() - init_weights[k]).norm()
+        step_dist_epoch = {'step_dist_n%s' % k: (w.data.cpu() - init_weights[k]).norm().data.tolist()
                            for (k, w) in enumerate(list(model.parameters())) if k in idxs}
 
 
@@ -406,132 +408,259 @@ def forward(data_loader, model, criterion, epoch=0, training=True, optimizer=Non
     if training:
         optimizer.zero_grad()
 
-    for i, (inputs, target) in enumerate(data_loader):
-        # measure data loading time
-        data_time.update(time.time() - end)
-        if args.gpus is not None:
-            target = target.cuda(async=True)
-        input_var = Variable(inputs.type(args.type), volatile=not training)
-        target_var = Variable(target)
+        for i, (inputs, target) in enumerate(data_loader):
+            # measure data loading time
+            data_time.update(time.time() - end)
+            if args.gpus is not None:
+                target = target.cuda(async=True)
+            input_var = Variable(inputs.type(args.type))
+            target_var = Variable(target)
 
-        # compute output
-        if not training:
-            output = model(input_var)
-            loss = criterion(output, target_var)
+            # compute output
+            if not training:
+                output = model(input_var)
+                loss = criterion(output, target_var)
 
-            # measure accuracy and record loss
-            prec1, prec5 = accuracy(output.data, target_var.data, topk=(1, 5))
-            losses.update(loss.data[0], input_var.size(0))
-            top1.update(prec1[0], input_var.size(0))
-            top5.update(prec5[0], input_var.size(0))
+                # measure accuracy and record loss
+                prec1, prec5 = accuracy(output.data, target_var.data, topk=(1, 5))
+                losses.update(loss.data[0], input_var.size(0))
+                top1.update(prec1[0], input_var.size(0))
+                top5.update(prec5[0], input_var.size(0))
 
-        else:
-            is_updating = ((i+1)%args.batch_multiplier == 0) or (i+1==len(data_loader))
-            mini_inputs = input_var.chunk(args.batch_size // args.mini_batch_size)
-            mini_targets = target_var.chunk(args.batch_size // args.mini_batch_size)
+            else:
+                is_updating = ((i+1)%args.batch_multiplier == 0) or (i+1==len(data_loader))
+                mini_inputs = input_var.chunk(args.batch_size // args.mini_batch_size)
+                mini_targets = target_var.chunk(args.batch_size // args.mini_batch_size)
 
 
-            # get the coefficent to scale noise
-            eq_batch_num = (len(data_loader)+args.batch_multiplier-1)//args.batch_multiplier
-            if args.smoothing_type == 'constant':
-              noise_coef = 1.
-            elif args.smoothing_type == 'anneal':
-              noise_coef = 1.0 / ((1 + epoch * eq_batch_num + i//args.batch_multiplier) ** args.anneal_index)
-              noise_coef = noise_coef ** 0.5
-            elif args.smoothing_type == 'tanh':
-              noise_coef = np.tanh(args.tanh_scale*((float)(epoch * eq_batch_num + i//args.batch_multiplier)/(float)(args.epochs * eq_batch_num) -.5))
-              noise_coef = (noise_coef + 1.)/2.0
-            else: raise ValueError('Unknown smoothing-type')
+                # get the coefficent to scale noise
+                eq_batch_num = (len(data_loader)+args.batch_multiplier-1)//args.batch_multiplier
+                if args.smoothing_type == 'constant':
+                  noise_coef = 1.
+                elif args.smoothing_type == 'anneal':
+                  noise_coef = 1.0 / ((1 + epoch * eq_batch_num + i//args.batch_multiplier) ** args.anneal_index)
+                  noise_coef = noise_coef ** 0.5
+                elif args.smoothing_type == 'tanh':
+                  noise_coef = np.tanh(args.tanh_scale*((float)(epoch * eq_batch_num + i//args.batch_multiplier)/(float)(args.epochs * eq_batch_num) -.5))
+                  noise_coef = (noise_coef + 1.)/2.0
+                else: raise ValueError('Unknown smoothing-type')
+                if i % args.print_freq == 0:
+                  logging.info('{phase} - Epoch: [{0}][{1}/{2}]\t'
+                               'Noise Coefficient: {noise_coef:.4f}\t'.format(
+                    epoch, i, len(data_loader),
+                    phase='TRAINING' if training else 'EVALUATING',
+                    noise_coef=noise_coef))
+
+                for k, mini_input_var in enumerate(mini_inputs):
+
+                    noises = {}
+                    # randomly change current model @ each mini-mini-batch
+                    if args.sharpness_smoothing:
+                        for key, p in model.named_parameters():
+                          if hasattr(model, 'quiet_parameters') and (key in model.quiet_parameters):
+                              continue
+
+                          if args.adapt_type == 'weight':
+                            noise = (torch.cuda.FloatTensor(p.size()).uniform_() * 2. - 1.) * args.sharpness_smoothing * torch.abs(p.data) * noise_coef
+
+                          elif args.adapt_type == 'filter':
+                            noise = (torch.cuda.FloatTensor(p.size()).uniform_() * 2. - 1.)
+                            noise_shape = noise.shape
+                            noise_norms = noise.view([noise_shape[0],-1]).norm(p=2, dim=1) + 1.0e-6
+                            p_norms = p.view([noise_shape[0], -1]).norm(p=2, dim=1)
+                            for shape_idx in range(1, len(noise_shape)):
+                                noise_norms = noise_norms.unsqueeze(-1)
+                                p_norms = p_norms.unsqueeze(-1)
+                            noise = noise / noise_norms * p_norms.data
+                            #for idx in range(0, noise.shape[0]):
+                            #  if 1 == len(noise.shape):
+                            #    if np.abs(np.linalg.norm(noise[idx]))>1.0e-6:
+                            #      noise[idx] = noise[idx] / np.linalg.norm(noise[idx]) * np.linalg.norm(p.data[idx])
+                            #  else:
+                            #    if np.abs(noise[idx].norm())>1.0e-6:
+                            #      noise[idx] = noise[idx] / noise[idx].norm() * p.data[idx].norm()
+
+                            noise = noise * args.sharpness_smoothing * noise_coef
+
+                          elif args.adapt_type == 'none':
+                            noise = (torch.cuda.FloatTensor(p.size()).uniform_() * 2. - 1.) * args.sharpness_smoothing * noise_coef
+
+                          else:
+                              raise ValueError('Unkown --adapt-type')
+                          noises[key] = noise
+                          p.data.add_(noise)
+
+                    mini_target_var = mini_targets[k]
+                    output = model(mini_input_var)
+                    loss = criterion(output, mini_target_var)
+
+                    prec1, prec5 = accuracy(output.data, mini_target_var.data, topk=(1, 5))
+                    losses.update(loss.data[0], mini_input_var.size(0))
+                    top1.update(prec1[0], mini_input_var.size(0))
+                    top5.update(prec5[0], mini_input_var.size(0))
+
+                    # compute gradient and do SGD step
+                    loss.backward()
+
+                    # denoise @ each mini-mini-batch.
+                    if args.sharpness_smoothing:
+                        for key, p in model.named_parameters():
+                          if key in noises:
+                            p.data.sub_(noises[key])
+
+                if is_updating:
+                  n_batches = args.batch_multiplier
+                  if (i+1) == len(data_loader):
+                      n_batches = (i % args.batch_multiplier) + 1
+                  for p in model.parameters():
+                      p.grad.data.div_(len(mini_inputs)*n_batches)
+                  clip_grad_norm(model.parameters(), 5.)
+                  optimizer.step()
+                  optimizer.zero_grad()
+
+
+            # measure elapsed time
+            batch_time.update(time.time() - end)
+            end = time.time()
+
             if i % args.print_freq == 0:
-              logging.info('{phase} - Epoch: [{0}][{1}/{2}]\t'
-                           'Noise Coefficient: {noise_coef:.4f}\t'.format(
-                epoch, i, len(data_loader),
-                phase='TRAINING' if training else 'EVALUATING',
-                noise_coef=noise_coef))
+                logging.info('{phase} - Epoch: [{0}][{1}/{2}]\t'
+                             'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+                             'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'
+                             'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
+                             'Prec@1 {top1.val:.3f} ({top1.avg:.3f})\t'
+                             'Prec@5 {top5.val:.3f} ({top5.avg:.3f})'.format(
+                                 epoch, i, len(data_loader),
+                                 phase='TRAINING' if training else 'EVALUATING',
+                                 batch_time=batch_time,
+                                 data_time=data_time, loss=losses, top1=top1, top5=top5))
+    else:
+        for i, (inputs, target) in enumerate(data_loader):
+            # measure data loading time
+            data_time.update(time.time() - end)
+            if args.gpus is not None:
+                target = target.cuda(async=True)
+            input_var = Variable(inputs.type(args.type))
+            target_var = Variable(target)
 
-            for k, mini_input_var in enumerate(mini_inputs):
+            # compute output
+            if not training:
+                output = model(input_var)
+                loss = criterion(output, target_var)
 
-                noises = {}
-                # randomly change current model @ each mini-mini-batch
-                if args.sharpness_smoothing:
-                    for key, p in model.named_parameters():
-                      if hasattr(model, 'quiet_parameters') and (key in model.quiet_parameters):
-                          continue
+                # measure accuracy and record loss
+                prec1, prec5 = accuracy(output.data, target_var.data, topk=(1, 5))
+                losses.update(loss.data[0], input_var.size(0))
+                top1.update(prec1[0], input_var.size(0))
+                top5.update(prec5[0], input_var.size(0))
 
-                      if args.adapt_type == 'weight':
-                        noise = (torch.cuda.FloatTensor(p.size()).uniform_() * 2. - 1.) * args.sharpness_smoothing * torch.abs(p.data) * noise_coef
-
-                      elif args.adapt_type == 'filter':
-                        noise = (torch.cuda.FloatTensor(p.size()).uniform_() * 2. - 1.)
-                        noise_shape = noise.shape
-                        noise_norms = noise.view([noise_shape[0],-1]).norm(p=2, dim=1) + 1.0e-6
-                        p_norms = p.view([noise_shape[0], -1]).norm(p=2, dim=1)
-                        for shape_idx in range(1, len(noise_shape)):
-                            noise_norms = noise_norms.unsqueeze(-1)
-                            p_norms = p_norms.unsqueeze(-1)
-                        noise = noise / noise_norms * p_norms.data
-                        #for idx in range(0, noise.shape[0]):
-                        #  if 1 == len(noise.shape):
-                        #    if np.abs(np.linalg.norm(noise[idx]))>1.0e-6:
-                        #      noise[idx] = noise[idx] / np.linalg.norm(noise[idx]) * np.linalg.norm(p.data[idx])
-                        #  else:
-                        #    if np.abs(noise[idx].norm())>1.0e-6:
-                        #      noise[idx] = noise[idx] / noise[idx].norm() * p.data[idx].norm()
-
-                        noise = noise * args.sharpness_smoothing * noise_coef
-
-                      elif args.adapt_type == 'none':
-                        noise = (torch.cuda.FloatTensor(p.size()).uniform_() * 2. - 1.) * args.sharpness_smoothing * noise_coef
-
-                      else:
-                          raise ValueError('Unkown --adapt-type')
-                      noises[key] = noise
-                      p.data.add_(noise)
-
-                mini_target_var = mini_targets[k]
-                output = model(mini_input_var)
-                loss = criterion(output, mini_target_var)
-
-                prec1, prec5 = accuracy(output.data, mini_target_var.data, topk=(1, 5))
-                losses.update(loss.data[0], mini_input_var.size(0))
-                top1.update(prec1[0], mini_input_var.size(0))
-                top5.update(prec5[0], mini_input_var.size(0))
-
-                # compute gradient and do SGD step
-                loss.backward()
-
-                # denoise @ each mini-mini-batch.
-                if args.sharpness_smoothing:
-                    for key, p in model.named_parameters():
-                      if key in noises:
-                        p.data.sub_(noises[key])
-
-            if is_updating:
-              n_batches = args.batch_multiplier
-              if (i+1) == len(data_loader):
-                  n_batches = (i % args.batch_multiplier) + 1
-              for p in model.parameters():
-                  p.grad.data.div_(len(mini_inputs)*n_batches)
-              clip_grad_norm(model.parameters(), 5.)
-              optimizer.step()
-              optimizer.zero_grad()
+            else:
+                is_updating = ((i+1)%args.batch_multiplier == 0) or (i+1==len(data_loader))
+                mini_inputs = input_var.chunk(args.batch_size // args.mini_batch_size)
+                mini_targets = target_var.chunk(args.batch_size // args.mini_batch_size)
 
 
-        # measure elapsed time
-        batch_time.update(time.time() - end)
-        end = time.time()
+                # get the coefficent to scale noise
+                eq_batch_num = (len(data_loader)+args.batch_multiplier-1)//args.batch_multiplier
+                if args.smoothing_type == 'constant':
+                  noise_coef = 1.
+                elif args.smoothing_type == 'anneal':
+                  noise_coef = 1.0 / ((1 + epoch * eq_batch_num + i//args.batch_multiplier) ** args.anneal_index)
+                  noise_coef = noise_coef ** 0.5
+                elif args.smoothing_type == 'tanh':
+                  noise_coef = np.tanh(args.tanh_scale*((float)(epoch * eq_batch_num + i//args.batch_multiplier)/(float)(args.epochs * eq_batch_num) -.5))
+                  noise_coef = (noise_coef + 1.)/2.0
+                else: raise ValueError('Unknown smoothing-type')
+                if i % args.print_freq == 0:
+                  logging.info('{phase} - Epoch: [{0}][{1}/{2}]\t'
+                               'Noise Coefficient: {noise_coef:.4f}\t'.format(
+                    epoch, i, len(data_loader),
+                    phase='TRAINING' if training else 'EVALUATING',
+                    noise_coef=noise_coef))
 
-        if i % args.print_freq == 0:
-            logging.info('{phase} - Epoch: [{0}][{1}/{2}]\t'
-                         'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
-                         'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'
-                         'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
-                         'Prec@1 {top1.val:.3f} ({top1.avg:.3f})\t'
-                         'Prec@5 {top5.val:.3f} ({top5.avg:.3f})'.format(
-                             epoch, i, len(data_loader),
-                             phase='TRAINING' if training else 'EVALUATING',
-                             batch_time=batch_time,
-                             data_time=data_time, loss=losses, top1=top1, top5=top5))
+                for k, mini_input_var in enumerate(mini_inputs):
+
+                    noises = {}
+                    # randomly change current model @ each mini-mini-batch
+                    if args.sharpness_smoothing:
+                        for key, p in model.named_parameters():
+                          if hasattr(model, 'quiet_parameters') and (key in model.quiet_parameters):
+                              continue
+
+                          if args.adapt_type == 'weight':
+                            noise = (torch.cuda.FloatTensor(p.size()).uniform_() * 2. - 1.) * args.sharpness_smoothing * torch.abs(p.data) * noise_coef
+
+                          elif args.adapt_type == 'filter':
+                            noise = (torch.cuda.FloatTensor(p.size()).uniform_() * 2. - 1.)
+                            noise_shape = noise.shape
+                            noise_norms = noise.view([noise_shape[0],-1]).norm(p=2, dim=1) + 1.0e-6
+                            p_norms = p.view([noise_shape[0], -1]).norm(p=2, dim=1)
+                            for shape_idx in range(1, len(noise_shape)):
+                                noise_norms = noise_norms.unsqueeze(-1)
+                                p_norms = p_norms.unsqueeze(-1)
+                            noise = noise / noise_norms * p_norms.data
+                            #for idx in range(0, noise.shape[0]):
+                            #  if 1 == len(noise.shape):
+                            #    if np.abs(np.linalg.norm(noise[idx]))>1.0e-6:
+                            #      noise[idx] = noise[idx] / np.linalg.norm(noise[idx]) * np.linalg.norm(p.data[idx])
+                            #  else:
+                            #    if np.abs(noise[idx].norm())>1.0e-6:
+                            #      noise[idx] = noise[idx] / noise[idx].norm() * p.data[idx].norm()
+
+                            noise = noise * args.sharpness_smoothing * noise_coef
+
+                          elif args.adapt_type == 'none':
+                            noise = (torch.cuda.FloatTensor(p.size()).uniform_() * 2. - 1.) * args.sharpness_smoothing * noise_coef
+
+                          else:
+                              raise ValueError('Unkown --adapt-type')
+                          noises[key] = noise
+                          p.data.add_(noise)
+
+                    mini_target_var = mini_targets[k]
+                    output = model(mini_input_var)
+                    loss = criterion(output, mini_target_var)
+
+                    prec1, prec5 = accuracy(output.data, mini_target_var.data, topk=(1, 5))
+                    losses.update(loss.data[0], mini_input_var.size(0))
+                    top1.update(prec1[0], mini_input_var.size(0))
+                    top5.update(prec5[0], mini_input_var.size(0))
+
+                    # compute gradient and do SGD step
+                    loss.backward()
+
+                    # denoise @ each mini-mini-batch.
+                    if args.sharpness_smoothing:
+                        for key, p in model.named_parameters():
+                          if key in noises:
+                            p.data.sub_(noises[key])
+
+                if is_updating:
+                  n_batches = args.batch_multiplier
+                  if (i+1) == len(data_loader):
+                      n_batches = (i % args.batch_multiplier) + 1
+                  for p in model.parameters():
+                      p.grad.data.div_(len(mini_inputs)*n_batches)
+                  clip_grad_norm(model.parameters(), 5.)
+                  optimizer.step()
+                  optimizer.zero_grad()
+
+
+            # measure elapsed time
+            batch_time.update(time.time() - end)
+            end = time.time()
+
+            if i % args.print_freq == 0:
+                logging.info('{phase} - Epoch: [{0}][{1}/{2}]\t'
+                             'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+                             'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'
+                             'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
+                             'Prec@1 {top1.val:.3f} ({top1.avg:.3f})\t'
+                             'Prec@5 {top5.val:.3f} ({top5.avg:.3f})'.format(
+                                 epoch, i, len(data_loader),
+                                 phase='TRAINING' if training else 'EVALUATING',
+                                 batch_time=batch_time,
+                                 data_time=data_time, loss=losses, top1=top1, top5=top5))
 
     return {'loss': losses.avg,
             'prec1': top1.avg,
