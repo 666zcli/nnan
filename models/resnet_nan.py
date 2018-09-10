@@ -3,10 +3,11 @@ import torchvision.transforms as transforms
 import math
 #import nnan
 import nnan_dense
+import _ext.nn as enn
 
 __all__ = ['resnet_nan', 'resnet18_nan', 'resnet34_nan', 'resnet50', 'resnet101', 'resnet152']
 
-snn = nnan_dense.NNaNUnit(dims=[20,10])
+snn = nnan_dense.NNaNUnit(dims=[100])
 
 
 def conv3x3(in_planes, out_planes, stride=1):
@@ -182,9 +183,16 @@ class ResNet_imagenet(ResNet):
 class ResNet_cifar10(ResNet):
 
     def __init__(self, num_classes=10,
-                 block=BasicBlock, depth=18):
+                 block=BasicBlock, depth=18, conv_init='conv_delta_orthogonal'):
         super(ResNet_cifar10, self).__init__()
         self.inplanes = 16
+        self.init_supported = ['conv_delta_orthogonal', 'kaiming_normal']
+        if conv_init in self.init_supported:
+            self.conv_init = conv_init
+        else:
+            print('{} is not supported'.format(conv_init))
+            self.conv_init = 'kaiming_normal'
+        print('initialize conv by {}'.format(conv_init))        
         n = int((depth - 2) / 6)
         self.conv1 = nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1,
                                bias=False)
@@ -206,7 +214,17 @@ class ResNet_cifar10(ResNet):
                                    self.layer2,
                                    self.layer3,
                                    self.avgpool)
-        init_model(self)
+        #init_model(self)
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                if self.conv_init == self.init_supported[0]:
+                    enn.init.conv_delta_orthogonal_(m.weight)
+                else:
+                    nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+            elif isinstance(m, nn.BatchNorm2d):
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
+
 
         self.regime = {
             0: {'optimizer': 'SGD', 'lr':  1e-1,
