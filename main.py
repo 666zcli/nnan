@@ -23,6 +23,8 @@ from math import ceil
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
+import torch.nn.init as init
+import random
 from models.resnet_nan import snn
 
 model_names = sorted(name for name in models.__dict__
@@ -159,6 +161,7 @@ def main():
         model_config = dict(model_config, **literal_eval(args.model_config))
 
     model = model(**model_config)
+ 
     logging.info("created model with configuration: %s", model_config)
 
     # optionally resume from a checkpoint
@@ -248,6 +251,7 @@ def main():
 
     for epoch in range(args.start_epoch, args.epochs):
         optimizer = adjust_optimizer(optimizer, epoch, regime)
+
         with torch.no_grad():
             if epoch == 0:
                 #plot the function of nnan
@@ -263,6 +267,7 @@ def main():
                 plt.clf()
                 plt.cla()
                 plt.close()
+
                       
         # train for one epoch
         train_result = train(train_loader, model, criterion, epoch, optimizer)
@@ -643,6 +648,18 @@ def validate(data_loader, model, criterion, epoch):
     return forward(data_loader, model, criterion, epoch,
                    training=False, optimizer=None)
 
+
+		
+
+def adjust_learning_rate(optimizer, epoch):
+    """Sets the learning rate 
+    # Adapted from PyTorch Imagenet example:
+    # https://github.com/pytorch/examples/blob/master/imagenet/main.py
+    """
+    lr = args.lr * (0.1 ** (epoch // 30))
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
+	
 
 if __name__ == '__main__':
     starttime = datetime.now()
