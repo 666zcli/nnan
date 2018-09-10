@@ -34,7 +34,7 @@ class BasicBlock(nn.Module):
         self.bn1 = nn.BatchNorm2d(planes)
         self.relu = nn.ReLU(inplace=True)
         #self.snn = nnan.NNaNUnit(dims=[15,15])
-        self.snn = nnan_dense.NNaNUnit(dims=[30,30])
+        self.snn = nnan_dense.NNaNUnit(dims=[100])
         self.conv2 = conv3x3(planes, planes)
         self.bn2 = nn.BatchNorm2d(planes)
         self.downsample = downsample
@@ -198,7 +198,7 @@ class ResNet_cifar10(ResNet):
         self.bn1 = nn.BatchNorm2d(16)
         self.relu = nn.ReLU(inplace=True)
         #self.snn = nnan.NNaNUnit(dims = [10,10,10])
-        self.snn = nnan_dense.NNaNUnit(dims = [10,10,10])
+        self.snn = nnan_dense.NNaNUnit(dims = [15,15])
         self.maxpool = lambda x: x
         self.layer1 = self._make_layer(block, 16, n)
         self.layer2 = self._make_layer(block, 32, n, stride=2)
@@ -229,9 +229,9 @@ class ResNet_cifar10(ResNet):
         self.regime = {
             0: {'optimizer': 'SGD', 'lr':  1e-1,
                 'weight_decay': 1e-4, 'momentum': 0.9},
-            81: {'lr': 1e-2},
-            122: {'lr':  1e-3, 'optimizer': 'SGD'},
-            164: {'lr':  1e-4}
+            81: {'lr': 1e-3},
+            122: {'lr':  1e-4, 'optimizer': 'SGD'},
+            164: {'lr':  1e-5}
         }
 
 
