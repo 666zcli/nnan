@@ -26,19 +26,9 @@ class NNaNUnit(nn.Module):
         outputs = inputs.view(torch.numel(inputs), 1)
         #output = outputs
         for module in self._modules.values():
-            #temp = Variable(outputs.type(torch.cuda.FloatTensor), volatile=True)
-            #print temp.size()
-            #outputs = output +outputs
+
             outputs = module(outputs)
-            #output = output.view(output.size(0), -1)
-            #outputs = outputs.view(output.size(0), -1)
-            #outputs = torch.cat([output, outputs], dim=1)
-            #outputs = output + outputs
-            
-            
-            
-            #print outputs.size()
-            
+                        
         # reshape back to the original shape
         return outputs.view(orig_shape) + inputs
 
